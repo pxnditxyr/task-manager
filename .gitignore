@@ -7,3 +7,5 @@ node_modules/
 [._]sw[a-p]
 
 /package-lock.json
+/postgres
+/.env

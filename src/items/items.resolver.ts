@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { ItemsService } from './items.service';
 import { Item } from './entities/item.entity';
 import { CreateItemInput } from './dto/create-item.input';
@@ -8,28 +8,37 @@ import { UpdateItemInput } from './dto/update-item.input';
 export class ItemsResolver {
   constructor(private readonly itemsService: ItemsService) {}
 
-  @Mutation(() => Item)
-  createItem(@Args('createItemInput') createItemInput: CreateItemInput) {
-    return this.itemsService.create(createItemInput);
+  @Mutation( () => Item )
+  async createItem (
+    @Args( 'createItemInput' ) createItemInput: CreateItemInput
+  ) : Promise<Item> {
+    console.log({  createItemInput})
+    return this.itemsService.create( createItemInput );
   }
 
-  @Query(() => [Item], { name: 'items' })
-  findAll() {
+  @Query( () => [ Item ], { name: 'items' } )
+  async findAll () : Promise<Item[]> {
     return this.itemsService.findAll();
   }
 
-  @Query(() => Item, { name: 'item' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.itemsService.findOne(id);
+  @Query( () => Item, { name: 'item' } )
+  async findOne(
+    @Args( 'term', { type: () => String } ) term : string
+  ) : Promise<Item> {
+    return this.itemsService.findOne( term );
+  }
+
+  @Mutation( () => Item )
+  async updateItem(
+    @Args( 'updateItemInput' ) updateItemInput: UpdateItemInput
+  ) : Promise<Item> {
+    return this.itemsService.update( updateItemInput.id, updateItemInput );
   }
 
   @Mutation(() => Item)
-  updateItem(@Args('updateItemInput') updateItemInput: UpdateItemInput) {
-    return this.itemsService.update(updateItemInput.id, updateItemInput);
-  }
-
-  @Mutation(() => Item)
-  removeItem(@Args('id', { type: () => Int }) id: number) {
-    return this.itemsService.remove(id);
+  removeItem(
+    @Args( 'id', { type: () => ID } ) id : string
+  ) : Promise<Item> {
+    return this.itemsService.remove( id );
   }
 }
